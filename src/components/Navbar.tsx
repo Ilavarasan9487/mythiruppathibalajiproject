@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User as UserIcon, LogOut } from 'lucide-react';
+import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar() {
@@ -46,28 +46,23 @@ export default function Navbar() {
               </Link>
             ))}
             
-            {user ? (
-              <div className="flex items-center space-x-4 ml-2">
-                <span className="text-sm text-gray-300 flex items-center whitespace-nowrap pl-2">
-                  <UserIcon className="w-4 h-4 mr-2" />
-                  <span className="hidden lg:inline">{user.email?.split('@')[0]}</span>
-                </span>
+            {/* Only show Admin controls if logged in. No public Sign In button. */}
+            {user && (
+              <div className="flex items-center space-x-4 ml-2 border-l border-slate-700 pl-4">
+                <Link
+                  to="/admin"
+                  className="flex items-center text-brand-gold hover:text-yellow-400 transition-colors text-sm font-bold whitespace-nowrap"
+                >
+                  <LayoutDashboard className="w-4 h-4 mr-1.5" />
+                  Admin Panel
+                </Link>
                 <button
                   onClick={signOut}
-                  className="text-gray-300 hover:text-brand-gold transition-colors"
+                  className="text-gray-400 hover:text-red-400 transition-colors"
                   title="Sign Out"
                 >
                   <LogOut className="w-5 h-5" />
                 </button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-4 ml-2">
-                <Link
-                  to="/login"
-                  className="bg-brand-gold text-brand-blue px-4 lg:px-6 py-2 rounded-full font-semibold hover:bg-yellow-400 transition-colors whitespace-nowrap text-sm lg:text-base"
-                >
-                  Sign In
-                </Link>
               </div>
             )}
           </div>
@@ -102,24 +97,26 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <div className="border-t border-slate-700 my-2 pt-2"></div>
-            {user ? (
-              <button
-                onClick={() => { signOut(); setIsOpen(false); }}
-                className="w-full text-left px-3 py-3 rounded-md text-base font-medium text-red-400 hover:text-red-300 hover:bg-slate-700 flex items-center"
-              >
-                <LogOut className="w-5 h-5 mr-3" />
-                Sign Out ({user.email?.split('@')[0]})
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                onClick={() => setIsOpen(false)}
-                className="block px-3 py-3 rounded-md text-base font-medium text-brand-gold hover:text-yellow-400 hover:bg-slate-700 flex items-center"
-              >
-                <UserIcon className="w-5 h-5 mr-3" />
-                Sign In
-              </Link>
+            
+            {user && (
+              <>
+                <div className="border-t border-slate-700 my-2 pt-2"></div>
+                <Link
+                  to="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-3 rounded-md text-base font-medium text-brand-gold hover:bg-slate-700 flex items-center"
+                >
+                  <LayoutDashboard className="w-5 h-5 mr-3" />
+                  Admin Panel
+                </Link>
+                <button
+                  onClick={() => { signOut(); setIsOpen(false); }}
+                  className="w-full text-left px-3 py-3 rounded-md text-base font-medium text-red-400 hover:text-red-300 hover:bg-slate-700 flex items-center"
+                >
+                  <LogOut className="w-5 h-5 mr-3" />
+                  Sign Out
+                </button>
+              </>
             )}
           </div>
         </div>

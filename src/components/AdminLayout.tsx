@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, Outlet, useNavigate, Navigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Car, Map, Package, 
   CalendarCheck, Settings, LogOut, Menu, X, ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 export default function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
+
+  // Protect the route: If not loading and no user is found, redirect to login
+  if (!loading && !user) {
+    return <Navigate to="/login" replace />;
+  }
 
   const handleSignOut = async () => {
     await signOut();
@@ -24,6 +30,15 @@ export default function AdminLayout() {
     { name: 'Bookings', path: '/admin/bookings', icon: CalendarCheck },
     { name: 'Settings', path: '/admin/settings', icon: Settings },
   ];
+
+  // Show a loading screen while checking auth state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -71,7 +86,7 @@ export default function AdminLayout() {
 
         <div className="p-4 border-t border-slate-700">
           <div className="flex items-center px-4 py-3 text-sm text-gray-300 mb-2">
-            <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center mr-3">
+            <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center mr-3 font-bold text-brand-gold">
               {user?.email?.charAt(0).toUpperCase() || 'A'}
             </div>
             <div className="truncate">
@@ -112,10 +127,12 @@ export default function AdminLayout() {
         </header>
 
         {/* Demo Mode Warning */}
-        <div className="bg-yellow-50 border-b border-yellow-200 px-4 sm:px-6 lg:px-8 py-3 flex items-center text-yellow-800 text-sm">
-          <ShieldAlert className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0" />
-          <p><strong>Demo Mode Active:</strong> Supabase is not connected. Changes made here will only reflect locally during this session.</p>
-        </div>
+        {!isSupabaseConfigured && (
+          <div className="bg-yellow-50 border-b border-yellow-200 px-4 sm:px-6 lg:px-8 py-3 flex items-center text-yellow-800 text-sm">
+            <ShieldAlert className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0" />
+            <p><strong>Demo Mode Active:</strong> Supabase is not connected. Changes made here will only reflect locally during this session.</p>
+          </div>
+        )}
 
         {/* Page Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">

@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+import { Lock } from 'lucide-react';
 
 export default function Login() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // Pre-filled credentials for development convenience
+  const [email, setEmail] = useState('ilavarasan4909@gmail.com');
+  const [password, setPassword] = useState('Qwertyuiop@2003');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // If already logged in, redirect to admin
+  useEffect(() => {
+    if (user) {
+      navigate('/admin');
+    }
+  }, [user, navigate]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,18 +26,11 @@ export default function Login() {
     setError('');
 
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        navigate('/');
-      } else {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        alert('Registration successful! You can now log in.');
-        setIsLogin(true);
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      navigate('/admin');
     } catch (err: any) {
-      setError(err.message || 'An error occurred during authentication.');
+      setError('Invalid admin credentials. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -35,39 +38,46 @@ export default function Login() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-brand-light py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-serif font-bold text-brand-blue">
-            {isLogin ? 'Sign in to your account' : 'Create an account'}
+      <div className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100">
+        <div className="flex flex-col items-center">
+          <div className="bg-brand-blue/10 p-4 rounded-full mb-4">
+            <Lock className="w-8 h-8 text-brand-blue" />
+          </div>
+          <h2 className="text-center text-3xl font-serif font-bold text-brand-blue">
+            Admin Portal
           </h2>
+          <p className="mt-2 text-center text-sm text-gray-500">
+            Secure login for authorized personnel only.
+          </p>
         </div>
+        
         <form className="mt-8 space-y-6" onSubmit={handleAuth}>
           {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm text-center">
+            <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl text-sm text-center font-medium">
               {error}
             </div>
           )}
-          <div className="rounded-md shadow-sm space-y-4">
+          <div className="space-y-4">
             <div>
-              <label className="sr-only">Email address</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email Address</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-brand-gold focus:border-brand-gold focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent sm:text-sm transition-all"
+                placeholder="admin@example.com"
               />
             </div>
             <div>
-              <label className="sr-only">Password</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-brand-gold focus:border-brand-gold focus:z-10 sm:text-sm"
-                placeholder="Password"
+                className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent sm:text-sm transition-all"
+                placeholder="••••••••"
               />
             </div>
           </div>
@@ -76,19 +86,13 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-brand-blue bg-brand-gold hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-gold transition-colors disabled:opacity-50"
+              className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-base font-bold rounded-xl text-white bg-brand-blue hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-colors shadow-md disabled:opacity-70"
             >
-              {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Sign Up'}
-            </button>
-          </div>
-          
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-brand-blue hover:text-brand-gold font-medium transition-colors"
-            >
-              {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                'Secure Login'
+              )}
             </button>
           </div>
         </form>
