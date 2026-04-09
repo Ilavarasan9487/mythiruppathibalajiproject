@@ -72,7 +72,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl flex flex-col gap-4 w-full max-w-5xl mx-auto relative z-20 -mt-4 sm:-mt-8 md:-mt-12"
+            className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl flex flex-col gap-4 w-full max-w-5xl mx-auto relative z-20 mt-4 sm:mt-8 md:mt-12"
           >
             {error && (
               <div className="bg-red-50 text-red-500 text-sm font-semibold p-3 rounded-lg text-left">
@@ -83,7 +83,7 @@ export default function Home() {
               <div className="flex-1 w-full text-left">
                 <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2 tracking-wide">Destination</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3.5 top-3.5 text-brand-gold w-5 h-5" />
+                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-gold w-5 h-5" />
                   <input 
                     type="text" 
                     value={destination}
@@ -96,7 +96,7 @@ export default function Home() {
               <div className="flex-1 w-full text-left">
                 <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2 tracking-wide">Date</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3.5 top-3.5 text-brand-gold w-5 h-5" />
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-gold w-5 h-5" />
                   <input 
                     type="date" 
                     value={date}
@@ -109,7 +109,7 @@ export default function Home() {
               <div className="flex-1 w-full text-left">
                 <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2 tracking-wide">Travelers</label>
                 <div className="relative">
-                  <Users className="absolute left-3.5 top-3.5 text-brand-gold w-5 h-5" />
+                  <Users className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-gold w-5 h-5" />
                   <select 
                     value={travelers}
                     onChange={(e) => setTravelers(e.target.value)}
@@ -124,7 +124,7 @@ export default function Home() {
               </div>
               <button 
                 onClick={handleSearch}
-                className="w-full lg:w-auto bg-brand-gold text-brand-blue px-8 py-3.5 rounded-xl font-bold hover:bg-yellow-400 transition-colors flex items-center justify-center shadow-md hover:shadow-lg text-sm sm:text-base mt-2 lg:mt-0"
+                className="w-full lg:w-auto bg-brand-gold text-brand-blue px-8 py-3 border border-transparent rounded-xl font-bold hover:bg-yellow-400 transition-colors flex items-center justify-center shadow-md hover:shadow-lg text-sm sm:text-base mt-2 lg:mt-0"
               >
                 <Search className="w-5 h-5 mr-2" />
                 Search
