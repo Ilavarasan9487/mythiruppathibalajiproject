@@ -286,7 +286,7 @@ export default function Home() {
               </div>
               <div className="flex-grow w-full h-full min-h-[300px]">
                 <iframe 
-                  src="https://maps.google.com/maps?q=Thirupathi+Balaji+Travels,+Rameswaram&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                  src="https://www.google.com/search?kgmid=/g/11yq62038t&hl=en-IN&q=Thirupathi+Balaji+Travels&shndl=30&shem=damc,lcuae,ptotple,shrtsdl&source=sh/x/loc/osrp/m1/2&kgs=b59e5458219a3677&utm_source=damc,lcuae,ptotple,shrtsdl,sh/x/loc/osrp/m1/2&output=embed" 
                   width="100%" 
                   height="100%" 
                   style={{ border: 0, minHeight: '100%' }} 
