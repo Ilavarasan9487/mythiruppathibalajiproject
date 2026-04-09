@@ -1,5 +1,7 @@
 import React from 'react';
-import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Star } from 'lucide-react';
+
+const GOOGLE_BUSINESS_LINK = 'https://www.google.com/search?kgmid=/g/11yq62038t&hl=en-IN&q=Thirupathi+Balaji+Travels&shndl=30&shem=damc,lcuae,ptotple,shrtsdl&source=sh/x/loc/osrp/m1/2&kgs=b59e5458219a3677&utm_source=damc,lcuae,ptotple,shrtsdl,sh/x/loc/osrp/m1/2';
 
 export default function Contact() {
   return (
@@ -91,6 +93,16 @@ export default function Contact() {
                   <p className="text-sm md:text-base text-gray-300 leading-relaxed text-pretty">24/7 Available for Bookings & Support</p>
                 </div>
               </div>
+
+              <a href={GOOGLE_BUSINESS_LINK} target="_blank" rel="noopener noreferrer" className="flex items-start group cursor-pointer">
+                <div className="bg-white/10 p-2.5 md:p-3 rounded-lg group-hover:bg-brand-gold transition-colors mr-4 md:mr-5 flex-shrink-0">
+                  <Star className="w-5 h-5 md:w-6 md:h-6 text-brand-gold group-hover:text-brand-blue transition-colors" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-base md:text-lg text-white mb-1 group-hover:text-brand-gold transition-colors">Google Business</h4>
+                  <p className="text-sm md:text-base text-gray-300 leading-relaxed text-pretty">View our profile and read customer reviews</p>
+                </div>
+              </a>
             </div>
           </div>
 
