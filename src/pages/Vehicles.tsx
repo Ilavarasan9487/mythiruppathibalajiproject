@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Users, Briefcase, Music, Wind, Check, Star } from 'lucide-react';
+import { Users, Check, Star } from 'lucide-react';
 
 interface Vehicle {
   id: string;
@@ -14,7 +14,7 @@ interface Vehicle {
 }
 
 const MOCK_VEHICLES: Vehicle[] = [
-  // Cars
+  // Cars (1-6 People)
   { 
     id: '1', 
     name: 'Toyota Innova Crysta', 
@@ -27,7 +27,7 @@ const MOCK_VEHICLES: Vehicle[] = [
   },
   { 
     id: '2', 
-    name: 'Swift Dzire / Etios', 
+    name: 'Swift Dzire', 
     category: 'Cars', 
     capacity: '4 Seats', 
     features: ['AC', 'Comfortable Seating', 'Music System', 'Standard Luggage'],
@@ -38,13 +38,22 @@ const MOCK_VEHICLES: Vehicle[] = [
     id: '3', 
     name: 'Chevrolet Tavera', 
     category: 'Cars', 
-    capacity: '8-9 Seats', 
+    capacity: '6-8 Seats', 
     features: ['Dual AC', 'Spacious Interiors', 'Music System', 'Roof Carrier'],
     description: 'An economical and spacious choice for medium-sized groups and budget family tours.', 
     image_url: 'https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&q=80'
   },
+  { 
+    id: '11', 
+    name: 'Maruti Ertiga', 
+    category: 'Cars', 
+    capacity: '6 Seats', 
+    features: ['AC', 'Flexible Seating', 'Music System', 'Smooth Ride'],
+    description: 'A comfortable and highly efficient MPV, great for small families and budget-friendly trips.', 
+    image_url: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&q=80'
+  },
 
-  // Vans
+  // Vans (6-14 People)
   { 
     id: '4', 
     name: 'Tempo Traveller', 
@@ -54,6 +63,15 @@ const MOCK_VEHICLES: Vehicle[] = [
     description: 'The best and most requested vehicle for group tours and extended family trips.', 
     image_url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80',
     is_popular: true
+  },
+  { 
+    id: '12', 
+    name: 'Mahindra Van', 
+    category: 'Vans', 
+    capacity: '8-10 Seats', 
+    features: ['AC / Non-AC', 'Spacious Cabin', 'Music System', 'Budget Friendly'],
+    description: 'A rugged and spacious van suitable for economical group travel and temple runs.', 
+    image_url: 'https://images.unsplash.com/photo-1516733968668-dbdce39c4651?auto=format&fit=crop&q=80'
   },
   { 
     id: '5', 
@@ -74,7 +92,7 @@ const MOCK_VEHICLES: Vehicle[] = [
     image_url: 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&q=80'
   },
 
-  // Buses
+  // Buses (20+ People)
   { 
     id: '7', 
     name: 'Mini Bus', 
@@ -91,7 +109,7 @@ const MOCK_VEHICLES: Vehicle[] = [
     capacity: '30-40 Seats', 
     features: ['Full AC', 'Semi-Sleeper', 'Entertainment System', 'Large Boot Space'],
     description: 'Ideal for long-distance group travel ensuring maximum comfort across states.', 
-    image_url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80' // Reusing van image as placeholder for bus
+    image_url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80'
   },
   { 
     id: '9', 
@@ -116,7 +134,7 @@ const MOCK_VEHICLES: Vehicle[] = [
 const CATEGORIES = [
   { id: 'All', label: 'All Vehicles' },
   { id: 'Cars', label: 'Cars (1-6 People)' },
-  { id: 'Vans', label: 'Vans (10-20 People)' },
+  { id: 'Vans', label: 'Vans (6-14 People)' },
   { id: 'Buses', label: 'Buses (20+ People)' }
 ];
 
@@ -231,9 +249,9 @@ export default function Vehicles() {
                     ))}
                   </div>
 
-                  {/* Fixed Footer Alignment */}
-                  <div className="mt-auto pt-6 border-t border-gray-100 flex flex-row items-center justify-between gap-3">
-                    <div className="text-left flex-shrink-0">
+                  {/* Fixed Footer Alignment with Flex Wrap */}
+                  <div className="mt-auto pt-6 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                    <div className="text-left">
                       <span className="text-xs sm:text-sm text-gray-500 font-medium block mb-0.5">Pricing</span>
                       <span className="text-base sm:text-lg font-bold text-brand-blue whitespace-nowrap">Contact for Price</span>
                     </div>
@@ -242,9 +260,9 @@ export default function Vehicles() {
                       href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hello!%20I'm%20interested%20in%20booking%20the%20${encodeURIComponent(vehicle.name)}%20(${encodeURIComponent(vehicle.capacity)}).%20Could%20you%20please%20share%20the%20pricing%20details?`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-auto bg-[#25D366] text-white px-4 sm:px-5 py-2.5 rounded-xl font-bold hover:bg-[#128C7E] transition-colors shadow-sm hover:shadow-md flex items-center justify-center flex-shrink-0 text-sm sm:text-base"
+                      className="w-full xl:w-auto flex-1 bg-[#25D366] text-white px-4 sm:px-5 py-2.5 rounded-xl font-bold hover:bg-[#128C7E] transition-colors shadow-sm hover:shadow-md flex items-center justify-center text-sm sm:text-base whitespace-nowrap"
                     >
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                       </svg>
                       Book Now
