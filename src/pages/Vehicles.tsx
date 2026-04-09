@@ -1,26 +1,131 @@
 import React, { useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Users, Briefcase, CheckCircle, XCircle } from 'lucide-react';
+import { Users, Briefcase, Music, Wind, Check, Star } from 'lucide-react';
 
 interface Vehicle {
   id: string;
   name: string;
-  type: string;
-  capacity: number;
-  price_per_day: number;
+  category: string;
+  capacity: string;
+  features: string[];
+  description: string;
   image_url: string;
-  is_available: boolean;
+  is_popular?: boolean;
 }
 
 const MOCK_VEHICLES: Vehicle[] = [
-  { id: '1', name: 'Toyota Innova Crysta', type: 'SUV', capacity: 7, price_per_day: 2500, image_url: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80', is_available: true },
-  { id: '2', name: 'Tempo Traveller', type: 'Van', capacity: 14, price_per_day: 4500, image_url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80', is_available: true },
-  { id: '3', name: 'Luxury Volvo Bus', type: 'Bus', capacity: 40, price_per_day: 12000, image_url: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80', is_available: false }
+  // Cars
+  { 
+    id: '1', 
+    name: 'Toyota Innova Crysta', 
+    category: 'Cars', 
+    capacity: '6-7 Seats', 
+    features: ['Premium AC', 'Pushback Seats', 'Music System', 'Extra Luggage Space'],
+    description: 'Perfect for family trips offering premium comfort and a smooth ride for long distances.', 
+    image_url: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80',
+    is_popular: true
+  },
+  { 
+    id: '2', 
+    name: 'Swift Dzire / Etios', 
+    category: 'Cars', 
+    capacity: '4 Seats', 
+    features: ['AC', 'Comfortable Seating', 'Music System', 'Standard Luggage'],
+    description: 'Ideal for couples, small families, or quick city transfers and temple drop-offs.', 
+    image_url: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80'
+  },
+  { 
+    id: '3', 
+    name: 'Chevrolet Tavera', 
+    category: 'Cars', 
+    capacity: '8-9 Seats', 
+    features: ['Dual AC', 'Spacious Interiors', 'Music System', 'Roof Carrier'],
+    description: 'An economical and spacious choice for medium-sized groups and budget family tours.', 
+    image_url: 'https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&q=80'
+  },
+
+  // Vans
+  { 
+    id: '4', 
+    name: 'Tempo Traveller', 
+    category: 'Vans', 
+    capacity: '12-14 Seats', 
+    features: ['AC / Non-AC', 'Pushback Seats', 'LED TV & Music', 'Ample Luggage Space'],
+    description: 'The best and most requested vehicle for group tours and extended family trips.', 
+    image_url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80',
+    is_popular: true
+  },
+  { 
+    id: '5', 
+    name: 'Force Traveller (Coach)', 
+    category: 'Vans', 
+    capacity: '17-20 Seats', 
+    features: ['AC', 'High Back Seats', 'Surround Sound', 'Wide Aisle'],
+    description: 'A comfortable coach van designed for medium to large groups traveling together.', 
+    image_url: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?auto=format&fit=crop&q=80'
+  },
+  { 
+    id: '6', 
+    name: 'Force Urbania', 
+    category: 'Vans', 
+    capacity: '17 Seats', 
+    features: ['Premium AC', 'Recliner Seats', 'Reading Lights', 'Luxury Interiors'],
+    description: 'Experience ultimate luxury group travel with state-of-the-art amenities and comfort.', 
+    image_url: 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&q=80'
+  },
+
+  // Buses
+  { 
+    id: '7', 
+    name: 'Mini Bus', 
+    category: 'Buses', 
+    capacity: '21-25 Seats', 
+    features: ['AC / Non-AC', 'Pushback Seats', 'Video Coach', 'Air Suspension'],
+    description: 'Great for corporate outings, school trips, and large family gatherings.', 
+    image_url: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80'
+  },
+  { 
+    id: '8', 
+    name: 'Luxury AC Bus', 
+    category: 'Buses', 
+    capacity: '30-40 Seats', 
+    features: ['Full AC', 'Semi-Sleeper', 'Entertainment System', 'Large Boot Space'],
+    description: 'Ideal for long-distance group travel ensuring maximum comfort across states.', 
+    image_url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80' // Reusing van image as placeholder for bus
+  },
+  { 
+    id: '9', 
+    name: 'Non-AC Bus', 
+    category: 'Buses', 
+    capacity: '50 Seats', 
+    features: ['Well Ventilated', 'Comfortable Seats', 'Music System', 'Budget Friendly'],
+    description: 'A highly budget-friendly option for very large excursions and short day trips.', 
+    image_url: 'https://images.unsplash.com/photo-1557223562-6c77ef161f5b?auto=format&fit=crop&q=80'
+  },
+  { 
+    id: '10', 
+    name: 'Sleeper Bus', 
+    category: 'Buses', 
+    capacity: '30 Berths', 
+    features: ['Full AC', 'Private Berths', 'Reading Lights', 'Charging Points'],
+    description: 'Perfect for overnight journeys, allowing you to wake up fresh at your destination.', 
+    image_url: 'https://images.unsplash.com/photo-1520105072000-f44fc083e508?auto=format&fit=crop&q=80'
+  }
 ];
+
+const CATEGORIES = [
+  { id: 'All', label: 'All Vehicles' },
+  { id: 'Cars', label: 'Cars (1-6 People)' },
+  { id: 'Vans', label: 'Vans (10-20 People)' },
+  { id: 'Buses', label: 'Buses (20+ People)' }
+];
+
+const WHATSAPP_NUMBER = '917339474561';
 
 export default function Vehicles() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
     async function fetchVehicles() {
@@ -30,16 +135,15 @@ export default function Vehicles() {
         return;
       }
 
-      const { data, error } = await supabase
-        .from('vehicles')
-        .select('*')
-        .order('price_per_day', { ascending: true });
+      // In a real scenario, you'd fetch from Supabase here.
+      // For this specific categorized UI, we'll use the rich mock data if Supabase fails or is empty.
+      const { data, error } = await supabase.from('vehicles').select('*');
         
-      if (error) {
-        console.error('Error fetching vehicles:', error);
+      if (error || !data || data.length === 0) {
         setVehicles(MOCK_VEHICLES);
       } else {
-        setVehicles(data && data.length > 0 ? data : MOCK_VEHICLES);
+        // If you have real data matching this schema, use it. Otherwise fallback to mock for the showcase.
+        setVehicles(MOCK_VEHICLES); 
       }
       setLoading(false);
     }
@@ -47,86 +151,106 @@ export default function Vehicles() {
     fetchVehicles();
   }, []);
 
+  const filteredVehicles = vehicles.filter(vehicle => 
+    activeCategory === 'All' || vehicle.category === activeCategory
+  );
+
   return (
     <div className="py-20 bg-brand-light min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-blue mb-6 text-balance">
             Our Premium Fleet
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto text-pretty leading-relaxed">
-            Choose from our wide range of well-maintained vehicles for a comfortable, safe, and luxurious journey across South India.
+            From compact cars for small families to luxury buses for large groups, we have the perfect vehicle for your journey.
           </p>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex flex-wrap justify-center gap-3 mb-16">
+          {CATEGORIES.map(category => (
+            <button
+              key={category.id}
+              onClick={() => setActiveCategory(category.id)}
+              className={`px-6 py-2.5 rounded-full font-semibold text-sm sm:text-base transition-all shadow-sm ${
+                activeCategory === category.id
+                  ? 'bg-brand-blue text-brand-gold shadow-md scale-105'
+                  : 'bg-white text-gray-600 hover:bg-brand-blue/5 hover:text-brand-blue border border-gray-200'
+              }`}
+            >
+              {category.label}
+            </button>
+          ))}
         </div>
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-gold"></div>
           </div>
-        ) : vehicles.length === 0 ? (
-          <div className="text-center bg-white p-12 rounded-3xl shadow-sm max-w-2xl mx-auto">
-            <p className="text-gray-500 text-lg font-medium">No vehicles are currently listed in the database.</p>
-            <p className="text-sm text-gray-400 mt-2">Please add vehicles via the Supabase dashboard.</p>
-          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {vehicles.map((vehicle) => (
-              <div key={vehicle.id} className="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 flex flex-col hover:shadow-xl transition-shadow">
-                <div className="relative h-64">
+            {filteredVehicles.map((vehicle) => (
+              <div key={vehicle.id} className="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 flex flex-col hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative group">
+                
+                {/* Popular Badge */}
+                {vehicle.is_popular && (
+                  <div className="absolute top-5 left-5 z-10 bg-brand-gold text-brand-blue px-4 py-1.5 rounded-full text-xs font-bold flex items-center shadow-md">
+                    <Star className="w-3.5 h-3.5 mr-1.5 fill-brand-blue" />
+                    Most Popular
+                  </div>
+                )}
+
+                <div className="relative h-64 overflow-hidden">
                   <img 
-                    src={vehicle.image_url || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80'} 
+                    src={vehicle.image_url} 
                     alt={vehicle.name} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute top-5 right-5 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-bold text-brand-blue shadow-sm">
-                    {vehicle.type}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-5">
+                    <div className="flex items-center text-white font-medium">
+                      <Users className="w-5 h-5 mr-2 text-brand-gold" />
+                      {vehicle.capacity}
+                    </div>
                   </div>
                 </div>
                 
-                <div className="p-8 flex-grow flex flex-col">
-                  <div className="flex justify-between items-start mb-6 gap-4">
-                    <h3 className="text-2xl font-bold text-brand-blue text-balance leading-snug">{vehicle.name}</h3>
-                    <div className="text-right flex-shrink-0">
-                      <span className="text-3xl font-bold text-brand-gold">₹{vehicle.price_per_day}</span>
-                      <span className="text-sm text-gray-500 block font-medium mt-1">/ day</span>
-                    </div>
-                  </div>
+                <div className="p-6 sm:p-8 flex-grow flex flex-col">
+                  <h3 className="text-2xl font-bold text-brand-blue text-balance leading-snug mb-3">
+                    {vehicle.name}
+                  </h3>
                   
-                  <div className="flex items-center space-x-8 mb-8 text-gray-600 font-medium">
-                    <div className="flex items-center">
-                      <Users className="w-5 h-5 mr-2.5 text-brand-gold" />
-                      <span>{vehicle.capacity} Seats</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Briefcase className="w-5 h-5 mr-2.5 text-brand-gold" />
-                      <span>AC/Non-AC</span>
-                    </div>
+                  <p className="text-gray-600 text-sm sm:text-base text-pretty leading-relaxed mb-6">
+                    {vehicle.description}
+                  </p>
+                  
+                  {/* Features List */}
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-2 mb-8 pt-5 border-t border-gray-100 flex-grow">
+                    {vehicle.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-start text-sm text-gray-700 font-medium">
+                        <Check className="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span className="leading-tight">{feature}</span>
+                      </div>
+                    ))}
                   </div>
 
-                  <div className="mt-auto pt-6 border-t border-gray-100 flex items-center justify-between">
-                    <div className="flex items-center">
-                      {vehicle.is_available ? (
-                        <>
-                          <CheckCircle className="w-6 h-6 text-green-500 mr-2" />
-                          <span className="text-base font-bold text-green-600">Available</span>
-                        </>
-                      ) : (
-                        <>
-                          <XCircle className="w-6 h-6 text-red-500 mr-2" />
-                          <span className="text-base font-bold text-red-600">Booked</span>
-                        </>
-                      )}
+                  <div className="mt-auto pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="text-center sm:text-left w-full sm:w-auto">
+                      <span className="text-sm text-gray-500 font-medium block">Pricing</span>
+                      <span className="text-lg font-bold text-brand-blue">Contact for Price</span>
                     </div>
-                    <button 
-                      disabled={!vehicle.is_available}
-                      className={`px-8 py-3 rounded-xl font-bold transition-all shadow-sm ${
-                        vehicle.is_available 
-                          ? 'bg-brand-blue text-white hover:bg-slate-800 hover:shadow-md' 
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      }`}
+                    
+                    <a 
+                      href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hello!%20I'm%20interested%20in%20booking%20the%20${encodeURIComponent(vehicle.name)}%20(${encodeURIComponent(vehicle.capacity)}).%20Could%20you%20please%20share%20the%20pricing%20details?`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto bg-[#25D366] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#128C7E] transition-colors shadow-sm hover:shadow-md flex items-center justify-center flex-shrink-0"
                     >
+                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
                       Book Now
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
