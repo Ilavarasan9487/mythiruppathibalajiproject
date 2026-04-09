@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { MapPin, Calendar, Users, Check, Clock, AlertCircle, X, CheckCircle2 } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 // --- MOCK DATA FOR SMART SEARCH ---
 const ALL_VEHICLES = [
@@ -90,21 +91,41 @@ export default function SearchResults() {
     setIsSuccess(false);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call to admin
+    if (isSupabaseConfigured) {
+      const { error } = await supabase.from('enquiries').insert([{
+        name: formData.name,
+        phone: formData.phone,
+        destination: destParam,
+        date: dateParam,
+        travelers: travelersParam,
+        vehicle: selectedVehicle,
+        status: 'Pending'
+      }]);
+      
+      if (error) {
+        console.error("Error submitting enquiry:", error);
+        alert("There was an error submitting your request. Please try again or contact us directly.");
+        setIsSubmitting(false);
+        return;
+      }
+    } else {
+      // Fallback for demo mode
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    setIsSubmitting(false);
+    setIsSuccess(true);
+    
+    // Close modal after showing success message
     setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      // Close modal after showing success message for a few seconds
-      setTimeout(() => {
-        setIsModalOpen(false);
-        setIsSuccess(false);
-        setFormData({ name: '', phone: '' });
-      }, 3000);
-    }, 1500);
+      setIsModalOpen(false);
+      setIsSuccess(false);
+      setFormData({ name: '', phone: '' });
+    }, 3000);
   };
 
   return (

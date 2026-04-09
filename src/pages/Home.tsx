@@ -43,11 +43,12 @@ export default function Home() {
     <div className="w-full overflow-hidden">
       {/* Hero Section */}
       <section 
-        className="relative min-h-[90vh] flex items-center justify-center bg-cover bg-center bg-no-repeat px-4 sm:px-6 bg-[url('https://images.dualite.app/9cbee41f-57cc-450e-b272-d43f285e0c6e/Gemini_Generated_Image_vetjobvetjobvetj-cc6ae5b3-2395-433d-b3f9-9b573c5c4fd6.webp')] md:bg-[url('https://images.dualite.app/03f09802-3dfc-4644-a7c4-306de861314f/Gemini_Generated_Image_if5rtwif5rtwif5r-7bd475e1-ffa7-42f7-9e72-60f106d331a8.webp')]"
+        className="relative min-h-[90vh] flex items-center justify-center px-4 sm:px-6 bg-cover bg-center bg-no-repeat bg-black"
+        style={{ backgroundImage: "url('https://images.dualite.app/fe9411f2-398d-485e-8fa8-9d3ed3dffd2a/asset-54435f36-244a-4ba7-84e2-39651abb599c.webp')" }}
       >
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-slate-900/40"></div>
-        
+        {/* Overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-brand-blue/70 z-0"></div>
+
         <div className="relative z-10 text-center w-full max-w-6xl mx-auto mt-10 md:mt-16 flex flex-col items-center justify-center">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -284,17 +285,23 @@ export default function Home() {
                   123 Temple Road, Near Agni Theertham, Rameswaram, Tamil Nadu 623526
                 </p>
               </div>
-              <div className="flex-grow w-full h-full min-h-[300px]">
-                <iframe 
-                  src="https://www.google.com/search?kgmid=/g/11yq62038t&hl=en-IN&q=Thirupathi+Balaji+Travels&shndl=30&shem=damc,lcuae,ptotple,shrtsdl&source=sh/x/loc/osrp/m1/2&kgs=b59e5458219a3677&utm_source=damc,lcuae,ptotple,shrtsdl,sh/x/loc/osrp/m1/2&output=embed" 
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 0, minHeight: '100%' }} 
-                  allowFullScreen 
-                  loading="lazy"
-                  title="Thirupathi Balaji Travels Location"
-                ></iframe>
-              </div>
+              <a 
+                href={GOOGLE_BUSINESS_LINK} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex-grow w-full h-full min-h-[300px] relative group block"
+              >
+                <img 
+                  src="https://images.dualite.app/f073172b-4e19-4c9e-849d-9852745382b2/asset-3048df11-fab2-406b-a437-5fc778471706.webp" 
+                  alt="Thirupathi Balaji Travels Location Map" 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg text-sm font-bold text-brand-blue flex items-center hover:bg-brand-gold transition-colors">
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Open in Maps
+                </div>
+              </a>
             </div>
           </div>
         </div>

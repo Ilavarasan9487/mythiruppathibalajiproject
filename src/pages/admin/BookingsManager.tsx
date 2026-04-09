@@ -1,20 +1,51 @@
-import React, { useState } from 'react';
-import { CheckCircle2, Clock, Phone } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { CheckCircle2, Clock, Phone, Trash2 } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+
+interface Enquiry {
+  id: string;
+  name: string;
+  phone: string;
+  destination: string;
+  date: string;
+  travelers: string;
+  vehicle: string;
+  status: string;
+  created_at: string;
+}
 
 export default function BookingsManager() {
-  const [bookings, setBookings] = useState([
-    { id: 1, name: 'Rajesh Kumar', phone: '+91 9876543210', vehicle: 'Toyota Innova Crysta', destination: 'Rameswaram', date: '2023-11-20', status: 'Pending' },
-    { id: 2, name: 'Priya Sharma', phone: '+91 8765432109', vehicle: 'Tempo Traveller', destination: 'Ooty', date: '2023-11-22', status: 'Contacted' },
-    { id: 3, name: 'Amit Patel', phone: '+91 7654321098', vehicle: 'Swift Dzire', destination: 'Madurai', date: '2023-11-25', status: 'Pending' },
-  ]);
+  const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const toggleStatus = (id: number) => {
-    setBookings(bookings.map(b => {
-      if (b.id === id) {
-        return { ...b, status: b.status === 'Pending' ? 'Contacted' : 'Pending' };
-      }
-      return b;
-    }));
+  const fetchEnquiries = async () => {
+    if (!isSupabaseConfigured) return;
+    setLoading(true);
+    const { data, error } = await supabase.from('enquiries').select('*').order('created_at', { ascending: false });
+    if (!error && data) setEnquiries(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchEnquiries();
+  }, []);
+
+  const toggleStatus = async (id: string, currentStatus: string) => {
+    if (!isSupabaseConfigured) return;
+    const newStatus = currentStatus === 'Pending' ? 'Contacted' : 'Pending';
+    
+    // Optimistic update
+    setEnquiries(enquiries.map(e => e.id === id ? { ...e, status: newStatus } : e));
+    
+    await supabase.from('enquiries').update({ status: newStatus }).eq('id', id);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!isSupabaseConfigured) return;
+    if (window.confirm('Are you sure you want to delete this enquiry?')) {
+      await supabase.from('enquiries').delete().eq('id', id);
+      fetchEnquiries();
+    }
   };
 
   return (
@@ -37,41 +68,53 @@ export default function BookingsManager() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {bookings.map((booking) => (
-                <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-bold text-brand-blue">{booking.name}</div>
-                    <div className="text-sm text-gray-500 flex items-center mt-1">
-                      <Phone className="w-3 h-3 mr-1" /> {booking.phone}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-gray-800">{booking.vehicle}</div>
-                    <div className="text-sm text-gray-500">To: {booking.destination}</div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600 font-medium">{booking.date}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
-                      booking.status === 'Pending' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
-                    }`}>
-                      {booking.status === 'Pending' ? <Clock className="w-3 h-3 mr-1" /> : <CheckCircle2 className="w-3 h-3 mr-1" />}
-                      {booking.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button 
-                      onClick={() => toggleStatus(booking.id)}
-                      className={`text-xs font-bold px-4 py-2 rounded-lg transition-colors border ${
-                        booking.status === 'Pending' 
-                          ? 'border-brand-gold text-brand-blue hover:bg-brand-gold' 
-                          : 'border-gray-200 text-gray-500 hover:bg-gray-100'
-                      }`}
-                    >
-                      {booking.status === 'Pending' ? 'Mark Contacted' : 'Mark Pending'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {loading ? (
+                <tr><td colSpan={5} className="text-center py-8 text-gray-500">Loading enquiries...</td></tr>
+              ) : enquiries.length === 0 ? (
+                <tr><td colSpan={5} className="text-center py-8 text-gray-500">No recent enquiries.</td></tr>
+              ) : (
+                enquiries.map((booking) => (
+                  <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-brand-blue">{booking.name}</div>
+                      <div className="text-sm text-gray-500 flex items-center mt-1">
+                        <Phone className="w-3 h-3 mr-1" /> {booking.phone}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-gray-800">{booking.vehicle || 'Not specified'}</div>
+                      <div className="text-sm text-gray-500">To: {booking.destination || 'Not specified'}</div>
+                      <div className="text-xs text-gray-400 mt-1">{booking.travelers}</div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600 font-medium">{booking.date || 'Flexible'}</td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
+                        booking.status === 'Pending' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                      }`}>
+                        {booking.status === 'Pending' ? <Clock className="w-3 h-3 mr-1" /> : <CheckCircle2 className="w-3 h-3 mr-1" />}
+                        {booking.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button 
+                          onClick={() => toggleStatus(booking.id, booking.status)}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-colors border ${
+                            booking.status === 'Pending' 
+                              ? 'border-brand-gold text-brand-blue hover:bg-brand-gold' 
+                              : 'border-gray-200 text-gray-500 hover:bg-gray-100'
+                          }`}
+                        >
+                          {booking.status === 'Pending' ? 'Mark Contacted' : 'Mark Pending'}
+                        </button>
+                        <button onClick={() => handleDelete(booking.id)} className="text-red-400 hover:text-red-600 p-2">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

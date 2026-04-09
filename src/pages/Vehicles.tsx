@@ -6,7 +6,7 @@ interface Vehicle {
   id: string;
   name: string;
   category: string;
-  capacity: string;
+  capacity_text: string;
   features: string[];
   description: string;
   image_url: string;
@@ -15,12 +15,11 @@ interface Vehicle {
 }
 
 const MOCK_VEHICLES: Vehicle[] = [
-  // Cars (1-6 People)
   { 
     id: '1', 
     name: 'Toyota Innova Crysta', 
     category: 'Cars', 
-    capacity: '6-7 Seats', 
+    capacity_text: '6-7 Seats', 
     features: ['Premium AC', 'Pushback Seats', 'Music System', 'Extra Luggage Space'],
     description: 'Perfect for family trips offering premium comfort and a smooth ride for long distances.', 
     image_url: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80',
@@ -28,36 +27,14 @@ const MOCK_VEHICLES: Vehicle[] = [
     status: 'available'
   },
   { 
-    id: '2', 
-    name: 'Swift Dzire', 
-    category: 'Cars', 
-    capacity: '4 Seats', 
-    features: ['AC', 'Comfortable Seating', 'Music System', 'Standard Luggage'],
-    description: 'Ideal for couples, small families, or quick city transfers and temple drop-offs.', 
-    image_url: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80',
-    status: 'available'
-  },
-  // Vans (6-14 People)
-  { 
     id: '4', 
     name: 'Tempo Traveller', 
     category: 'Vans', 
-    capacity: '12-14 Seats', 
+    capacity_text: '12-14 Seats', 
     features: ['AC / Non-AC', 'Pushback Seats', 'LED TV & Music', 'Ample Luggage Space'],
     description: 'The best and most requested vehicle for group tours and extended family trips.', 
     image_url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80',
     is_popular: true,
-    status: 'available'
-  },
-  // Buses (20+ People)
-  { 
-    id: '7', 
-    name: 'Mini Bus', 
-    category: 'Buses', 
-    capacity: '21-25 Seats', 
-    features: ['AC / Non-AC', 'Pushback Seats', 'Video Coach', 'Air Suspension'],
-    description: 'Great for corporate outings, school trips, and large family gatherings.', 
-    image_url: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80',
     status: 'available'
   },
 ];
@@ -199,7 +176,7 @@ export default function Vehicles() {
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 md:p-5">
                       <div className="flex items-center text-white font-medium text-sm md:text-base">
                         <Users className="w-4 h-4 md:w-5 md:h-5 mr-2 text-brand-gold" />
-                        {vehicle.capacity}
+                        {vehicle.capacity_text}
                       </div>
                     </div>
                   </div>
@@ -215,7 +192,7 @@ export default function Vehicles() {
                     
                     {/* Features List */}
                     <div className="grid grid-cols-2 gap-y-2 md:gap-y-3 gap-x-2 mb-6 md:mb-8 pt-4 md:pt-5 border-t border-gray-100 flex-grow">
-                      {vehicle.features.map((feature, idx) => (
+                      {(vehicle.features || []).map((feature, idx) => (
                         <div key={idx} className="flex items-start text-xs sm:text-sm text-gray-700 font-medium">
                           <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2 text-green-500 flex-shrink-0 mt-0.5" />
                           <span className="leading-tight">{feature}</span>
@@ -231,7 +208,7 @@ export default function Vehicles() {
                       </div>
                       
                       <a 
-                        href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hello!%20I'm%20interested%20in%20booking%20the%20${encodeURIComponent(vehicle.name)}%20(${encodeURIComponent(vehicle.capacity)}).%20${isBooked ? 'When will it be available next?' : 'Could you please share the pricing details?'}`}
+                        href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hello!%20I'm%20interested%20in%20booking%20the%20${encodeURIComponent(vehicle.name)}%20(${encodeURIComponent(vehicle.capacity_text)}).%20${isBooked ? 'When will it be available next?' : 'Could you please share the pricing details?'}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`w-full sm:w-auto sm:flex-1 text-white px-4 sm:px-5 py-2.5 md:py-3 rounded-xl font-bold transition-colors shadow-sm hover:shadow-md flex items-center justify-center text-sm md:text-base whitespace-nowrap ${

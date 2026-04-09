@@ -1,20 +1,98 @@
-import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, X, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Edit2, Trash2, X, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+
+interface Destination {
+  id: string;
+  name: string;
+  category: string;
+  image_url: string;
+  description: string;
+  best_time: string;
+  duration: string;
+}
 
 export default function DestinationsManager() {
-  const [destinations, setDestinations] = useState([
-    { id: '1', name: 'Rameswaram', category: 'Temple Places', image_url: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&q=80' },
-    { id: '2', name: 'Ooty', category: 'Hill Stations', image_url: 'https://images.unsplash.com/photo-1585130401366-fe05a8d813c4?auto=format&fit=crop&q=80' },
-    { id: '3', name: 'Madurai', category: 'Temple Places', image_url: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&q=80' },
-  ]);
-
+  const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<any>(null);
+  const [editingItem, setEditingItem] = useState<Destination | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSave = (e: React.FormEvent) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    category: 'Hill Stations',
+    image_url: '',
+    description: '',
+    best_time: '',
+    duration: ''
+  });
+
+  const fetchDestinations = async () => {
+    if (!isSupabaseConfigured) return;
+    setLoading(true);
+    const { data, error } = await supabase.from('destinations').select('*').order('created_at', { ascending: false });
+    if (!error && data) setDestinations(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchDestinations();
+  }, []);
+
+  const openModal = (item: Destination | null = null) => {
+    setEditingItem(item);
+    setError('');
+    if (item) {
+      setFormData({
+        name: item.name,
+        category: item.category || 'Hill Stations',
+        image_url: item.image_url || '',
+        description: item.description || '',
+        best_time: item.best_time || '',
+        duration: item.duration || ''
+      });
+    } else {
+      setFormData({ name: '', category: 'Hill Stations', image_url: '', description: '', best_time: '', duration: '' });
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    // Custom Validation
+    if (!formData.name.trim()) {
+      setError('Please enter a Destination Name.');
+      return;
+    }
+    if (!formData.image_url.trim()) {
+      setError('Please provide an Image URL.');
+      return;
+    }
+
+    if (!isSupabaseConfigured) return;
+    setIsSaving(true);
+
+    if (editingItem) {
+      await supabase.from('destinations').update(formData).eq('id', editingItem.id);
+    } else {
+      await supabase.from('destinations').insert([formData]);
+    }
+
+    setIsSaving(false);
     setIsModalOpen(false);
-    alert('Destination saved successfully! (Demo Mode)');
+    fetchDestinations();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!isSupabaseConfigured) return;
+    if (window.confirm('Are you sure you want to delete this destination?')) {
+      await supabase.from('destinations').delete().eq('id', id);
+      fetchDestinations();
+    }
   };
 
   return (
@@ -25,7 +103,7 @@ export default function DestinationsManager() {
           <p className="text-gray-500 text-sm mt-1">Add or edit travel destinations shown on your website.</p>
         </div>
         <button 
-          onClick={() => { setEditingItem(null); setIsModalOpen(true); }}
+          onClick={() => openModal()}
           className="bg-brand-gold text-brand-blue px-4 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors flex items-center shadow-sm"
         >
           <Plus className="w-5 h-5 mr-2" />
@@ -44,25 +122,31 @@ export default function DestinationsManager() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {destinations.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 flex items-center">
-                    <img src={item.image_url} alt={item.name} className="w-16 h-12 rounded-lg object-cover mr-4 border border-gray-200" />
-                    <span className="font-bold text-brand-blue">{item.name}</span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">
-                    <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">{item.category}</span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button onClick={() => { setEditingItem(item); setIsModalOpen(true); }} className="text-blue-500 hover:text-blue-700 p-2">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => setDestinations(destinations.filter(d => d.id !== item.id))} className="text-red-500 hover:text-red-700 p-2 ml-2">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {loading ? (
+                <tr><td colSpan={3} className="text-center py-8 text-gray-500">Loading destinations...</td></tr>
+              ) : destinations.length === 0 ? (
+                <tr><td colSpan={3} className="text-center py-8 text-gray-500">No destinations found.</td></tr>
+              ) : (
+                destinations.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 flex items-center">
+                      <img src={item.image_url} alt={item.name} className="w-16 h-12 rounded-lg object-cover mr-4 border border-gray-200" />
+                      <span className="font-bold text-brand-blue">{item.name}</span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">
+                      <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">{item.category}</span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button onClick={() => openModal(item)} className="text-blue-500 hover:text-blue-700 p-2">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete(item.id)} className="text-red-500 hover:text-red-700 p-2 ml-2">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -78,20 +162,36 @@ export default function DestinationsManager() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <form onSubmit={handleSave} className="p-6 space-y-4">
+            <form onSubmit={handleSave} className="p-6 space-y-4" noValidate>
+
+              {error && (
+                <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg text-sm font-medium flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                  {error}
+                </div>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">Destination Name</label>
-                  <input type="text" defaultValue={editingItem?.name} required className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-gold outline-none" />
+                  <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-gold outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
-                  <select defaultValue={editingItem?.category || 'Hill Stations'} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-gold outline-none bg-white">
-                    <option>Hill Stations</option>
-                    <option>Temple Places</option>
-                    <option>Cities & Heritage</option>
-                    <option>Nature & Wildlife</option>
+                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-gold outline-none bg-white">
+                    <option value="Hill Stations">Hill Stations</option>
+                    <option value="Temple Places">Temple Places</option>
+                    <option value="Cities & Heritage">Cities & Heritage</option>
+                    <option value="Nature & Wildlife">Nature & Wildlife</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Best Time to Visit</label>
+                  <input type="text" value={formData.best_time} onChange={e => setFormData({...formData, best_time: e.target.value})} placeholder="e.g., Oct to Mar" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-gold outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Duration</label>
+                  <input type="text" value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} placeholder="e.g., 2-3 Days" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-gold outline-none" />
                 </div>
               </div>
               
@@ -101,18 +201,20 @@ export default function DestinationsManager() {
                   <div className="bg-gray-50 px-3 py-2 border-r border-gray-200 text-gray-500">
                     <ImageIcon className="w-5 h-5" />
                   </div>
-                  <input type="url" defaultValue={editingItem?.image_url} placeholder="https://..." required className="w-full px-4 py-2 outline-none" />
+                  <input type="url" value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} placeholder="https://..." className="w-full px-4 py-2 outline-none" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-                <textarea rows={3} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-gold outline-none resize-none"></textarea>
+                <textarea rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-gold outline-none resize-none"></textarea>
               </div>
 
               <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                <button type="submit" className="bg-brand-blue text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 transition-colors shadow-md">Save Destination</button>
+                <button type="submit" disabled={isSaving} className="bg-brand-blue text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 transition-colors shadow-md disabled:opacity-70">
+                  {isSaving ? 'Saving...' : 'Save Destination'}
+                </button>
               </div>
             </form>
           </div>

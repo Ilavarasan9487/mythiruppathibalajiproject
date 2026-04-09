@@ -5,9 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { Lock } from 'lucide-react';
 
 export default function Login() {
-  // Pre-filled credentials for development convenience
-  const [email, setEmail] = useState('ilavarasan4909@gmail.com');
-  const [password, setPassword] = useState('Qwertyuiop@2003');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');

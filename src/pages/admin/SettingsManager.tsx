@@ -1,17 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Save, Phone, Mail, MapPin, MessageCircle, Link as LinkIcon } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
 export default function SettingsManager() {
   const [isSaving, setIsSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    phone: '+91 733 947 4561',
+    whatsapp: '917339474561',
+    email: 'bookings@thirupathibalajitravels.com',
+    address: '123 Temple Road, Near Agni Theertham, Rameswaram, Tamil Nadu 623526',
+    google_business_link: 'https://www.google.com/search?kgmid=/g/11yq62038t...',
+    google_maps_url: 'https://www.google.com/search?kgmid=/g/11yq62038t...'
+  });
 
-  const handleSave = (e: React.FormEvent) => {
+  useEffect(() => {
+    async function fetchSettings() {
+      if (!isSupabaseConfigured) return;
+      const { data } = await supabase.from('site_settings').select('*').eq('id', 1).single();
+      if (data) {
+        setFormData({
+          phone: data.phone || formData.phone,
+          whatsapp: data.whatsapp || formData.whatsapp,
+          email: data.email || formData.email,
+          address: data.address || formData.address,
+          google_business_link: data.google_business_link || formData.google_business_link,
+          google_maps_url: data.google_maps_url || formData.google_maps_url
+        });
+      }
+      setLoading(false);
+    }
+    fetchSettings();
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) return;
     setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      alert('Settings updated successfully! (Demo Mode)');
-    }, 1000);
+    
+    await supabase.from('site_settings').upsert({ id: 1, ...formData });
+    
+    setIsSaving(false);
+    alert('Settings updated successfully!');
   };
+
+  if (loading && isSupabaseConfigured) return <div className="p-8">Loading settings...</div>;
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -29,28 +62,28 @@ export default function SettingsManager() {
               <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
               <div className="relative">
                 <Phone className="absolute left-3.5 top-3 text-gray-400 w-5 h-5" />
-                <input type="text" defaultValue="+91 733 947 4561" className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none" />
+                <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none" />
               </div>
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">WhatsApp Number (with country code)</label>
               <div className="relative">
                 <MessageCircle className="absolute left-3.5 top-3 text-gray-400 w-5 h-5" />
-                <input type="text" defaultValue="917339474561" className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none" />
+                <input type="text" value={formData.whatsapp} onChange={e => setFormData({...formData, whatsapp: e.target.value})} className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none" />
               </div>
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-3 text-gray-400 w-5 h-5" />
-                <input type="email" defaultValue="bookings@thirupathibalajitravels.com" className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none" />
+                <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none" />
               </div>
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700 mb-2">Office Address</label>
               <div className="relative">
                 <MapPin className="absolute left-3.5 top-3 text-gray-400 w-5 h-5" />
-                <input type="text" defaultValue="123 Temple Road, Near Agni Theertham, Rameswaram, Tamil Nadu 623526" className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none" />
+                <input type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none" />
               </div>
             </div>
           </div>
@@ -64,14 +97,14 @@ export default function SettingsManager() {
               <label className="block text-sm font-semibold text-gray-700 mb-2">Google Business / Reviews Link</label>
               <div className="relative">
                 <LinkIcon className="absolute left-3.5 top-3 text-gray-400 w-5 h-5" />
-                <input type="url" defaultValue="https://www.google.com/search?kgmid=/g/11yq62038t..." className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none text-gray-600" />
+                <input type="url" value={formData.google_business_link} onChange={e => setFormData({...formData, google_business_link: e.target.value})} className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none text-gray-600" />
               </div>
               <p className="text-xs text-gray-500 mt-2">This link is used for the "Top Rated on Google" buttons and footer icons.</p>
             </div>
             
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Google Maps Embed URL (iframe src)</label>
-              <textarea rows={3} defaultValue="https://www.google.com/search?kgmid=/g/11yq62038t..." className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none resize-none text-gray-600 text-sm"></textarea>
+              <textarea rows={3} value={formData.google_maps_url} onChange={e => setFormData({...formData, google_maps_url: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-gold outline-none resize-none text-gray-600 text-sm"></textarea>
             </div>
           </div>
         </div>
