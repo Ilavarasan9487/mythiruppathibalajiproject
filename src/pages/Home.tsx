@@ -9,10 +9,10 @@ export default function Home() {
       {/* Hero Section */}
       <section 
         className="relative min-h-[90vh] flex items-center justify-center bg-cover bg-center bg-no-repeat px-4 sm:px-6"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1623190230999-4c511d167045?auto=format&fit=crop&q=80')" }}
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1623190230999-4c511d167045?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')" }}
       >
-        {/* Dark Overlay for better text readability */}
-        <div className="absolute inset-0 bg-slate-900/70"></div>
+        {/* Dark Overlay for better text readability - Opacity reduced to make the bridge clearly visible */}
+        <div className="absolute inset-0 bg-slate-900/40"></div>
         
         <div className="relative z-10 text-center w-full max-w-6xl mx-auto mt-10 md:mt-16 flex flex-col items-center justify-center">
           <motion.h1 
@@ -27,7 +27,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-base sm:text-lg md:text-2xl text-white mb-10 sm:mb-12 font-light tracking-wide text-pretty max-w-3xl mx-auto px-2"
+            className="text-base sm:text-lg md:text-2xl text-white mb-10 sm:mb-12 font-medium tracking-wide text-pretty max-w-3xl mx-auto px-2 drop-shadow-lg"
           >
             Your Divine Journey Begins in Rameswaram
           </motion.p>
