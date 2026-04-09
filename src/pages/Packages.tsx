@@ -88,8 +88,8 @@ export default function Packages() {
                     {pkg.duration_days} Days / {pkg.duration_days - 1} Nights
                   </div>
                   
-                  <div className="mt-auto pt-5 md:pt-6 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
-                    <div>
+                  <div className="mt-auto pt-5 md:pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="w-full sm:w-auto">
                       <span className="text-xs md:text-sm text-gray-500 font-medium block mb-0.5 md:mb-1">Starting from</span>
                       <span className="text-2xl md:text-3xl font-bold text-brand-blue">₹{pkg.price}</span>
                     </div>

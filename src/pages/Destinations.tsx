@@ -89,7 +89,7 @@ export default function Destinations() {
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm md:text-base transition-all shadow-sm ${
+              className={`px-3 sm:px-6 py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm md:text-base transition-all shadow-sm ${
                 activeCategory === category
                   ? 'bg-brand-blue text-brand-gold shadow-md scale-105'
                   : 'bg-white text-gray-600 hover:bg-brand-blue/5 hover:text-brand-blue border border-gray-200'

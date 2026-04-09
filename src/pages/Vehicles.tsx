@@ -152,7 +152,7 @@ export default function Vehicles() {
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm md:text-base transition-all shadow-sm ${
+              className={`px-3 sm:px-6 py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm md:text-base transition-all shadow-sm ${
                 activeCategory === category.id
                   ? 'bg-brand-blue text-brand-gold shadow-md scale-105'
                   : 'bg-white text-gray-600 hover:bg-brand-blue/5 hover:text-brand-blue border border-gray-200'
@@ -223,8 +223,8 @@ export default function Vehicles() {
                       ))}
                     </div>
 
-                    {/* Fixed Footer Alignment with Flex Wrap */}
-                    <div className="mt-auto pt-5 md:pt-6 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3 md:gap-4">
+                    {/* Fixed Footer Alignment with Flex Col on Mobile */}
+                    <div className="mt-auto pt-5 md:pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div className="text-left w-full sm:w-auto">
                         <span className="text-xs sm:text-sm text-gray-500 font-medium block mb-0.5">Pricing</span>
                         <span className="text-base sm:text-lg font-bold text-brand-blue whitespace-nowrap">Contact for Price</span>

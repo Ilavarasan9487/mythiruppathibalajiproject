@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User as UserIcon, LogOut, Settings } from 'lucide-react';
+import { Menu, X, User as UserIcon, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar() {
@@ -25,8 +25,9 @@ export default function Navbar() {
         <div className="flex justify-between h-16 sm:h-20">
           <div className="flex items-center mr-2 sm:mr-4 lg:mr-8 flex-shrink-0">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="font-serif text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-brand-gold whitespace-nowrap tracking-tight truncate max-w-[200px] sm:max-w-none">
-                Thirupathi Balaji Travels
+              <span className="font-serif text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-brand-gold leading-tight sm:whitespace-nowrap tracking-tight">
+                Thirupathi Balaji<span className="hidden sm:inline"> Travels</span>
+                <span className="sm:hidden block text-xs">Travels</span>
               </span>
             </Link>
           </div>
@@ -47,15 +48,7 @@ export default function Navbar() {
             
             {user ? (
               <div className="flex items-center space-x-4 ml-2">
-                <Link 
-                  to="/admin/vehicles"
-                  className="text-gray-300 hover:text-brand-gold transition-colors flex items-center text-sm"
-                  title="Admin Panel"
-                >
-                  <Settings className="w-4 h-4 mr-1.5" />
-                  <span className="hidden lg:inline">Admin</span>
-                </Link>
-                <span className="text-sm text-gray-300 flex items-center whitespace-nowrap border-l border-gray-600 pl-4">
+                <span className="text-sm text-gray-300 flex items-center whitespace-nowrap pl-2">
                   <UserIcon className="w-4 h-4 mr-2" />
                   <span className="hidden lg:inline">{user.email?.split('@')[0]}</span>
                 </span>
@@ -69,13 +62,6 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center space-x-4 ml-2">
-                <Link 
-                  to="/admin/vehicles"
-                  className="text-gray-400 hover:text-brand-gold transition-colors text-xs hidden lg:block"
-                  title="Admin Demo"
-                >
-                  Admin Demo
-                </Link>
                 <Link
                   to="/login"
                   className="bg-brand-gold text-brand-blue px-4 lg:px-6 py-2 rounded-full font-semibold hover:bg-yellow-400 transition-colors whitespace-nowrap text-sm lg:text-base"
@@ -117,14 +103,6 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="border-t border-slate-700 my-2 pt-2"></div>
-            <Link
-              to="/admin/vehicles"
-              onClick={() => setIsOpen(false)}
-              className="block px-3 py-3 rounded-md text-base font-medium text-blue-400 hover:text-white hover:bg-slate-700 flex items-center"
-            >
-              <Settings className="w-5 h-5 mr-3" />
-              Admin Panel
-            </Link>
             {user ? (
               <button
                 onClick={() => { signOut(); setIsOpen(false); }}
