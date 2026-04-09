@@ -10,6 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState('Qwertyuiop@2003');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -24,13 +25,40 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccessMsg('');
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      // 1. First, attempt to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      
+      if (signInError) {
+        // 2. If sign in fails (likely because user doesn't exist), attempt to sign up automatically
+        if (signInError.message.includes('Invalid login credentials')) {
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ 
+            email, 
+            password 
+          });
+
+          if (signUpError) {
+            throw signUpError;
+          }
+
+          // If Supabase requires email confirmation by default
+          if (signUpData.user && !signUpData.session) {
+            setSuccessMsg('Account created successfully! Please check your email inbox to verify your account before logging in.');
+            setLoading(false);
+            return;
+          }
+        } else {
+          throw signInError;
+        }
+      }
+      
+      // If successful (either sign in worked, or sign up auto-logged in)
       navigate('/admin');
     } catch (err: any) {
-      setError('Invalid admin credentials. Please try again.');
+      console.error("Auth error:", err);
+      setError(err.message || 'Invalid admin credentials. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -57,6 +85,12 @@ export default function Login() {
               {error}
             </div>
           )}
+          {successMsg && (
+            <div className="bg-green-50 border border-green-100 text-green-700 p-4 rounded-xl text-sm text-center font-medium">
+              {successMsg}
+            </div>
+          )}
+          
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email Address</label>
