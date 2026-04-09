@@ -2,19 +2,19 @@ import React from 'react';
 
 export default function About() {
   return (
-    <div className="py-20 lg:py-28 bg-white min-h-screen flex items-center">
+    <div className="py-12 md:py-20 lg:py-28 bg-white min-h-screen flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
           
           {/* Text Content */}
           <div className="order-2 lg:order-1">
-            <div className="inline-block bg-brand-gold/10 text-brand-gold font-semibold px-4 py-1.5 rounded-full text-sm mb-6">
+            <div className="inline-block bg-brand-gold/10 text-brand-gold font-semibold px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm mb-4 md:mb-6">
               Our Story
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-brand-blue mb-8 text-balance leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-brand-blue mb-6 md:mb-8 text-balance leading-tight">
               About Thirupathi Balaji Travels
             </h1>
-            <div className="space-y-6 text-lg text-gray-600 text-pretty leading-relaxed">
+            <div className="space-y-4 md:space-y-6 text-base md:text-lg text-gray-600 text-pretty leading-relaxed">
               <p>
                 Founded in the sacred city of Rameswaram, <strong className="text-brand-blue font-semibold">Thirupathi Balaji Travels</strong> has been the trusted companion for thousands of pilgrims and tourists exploring the divine beauty of South India.
               </p>
@@ -26,22 +26,22 @@ export default function About() {
               </p>
             </div>
             
-            <div className="mt-10 grid grid-cols-2 gap-8 border-t border-gray-100 pt-10">
+            <div className="mt-8 md:mt-10 grid grid-cols-2 gap-6 md:gap-8 border-t border-gray-100 pt-8 md:pt-10">
               <div>
-                <h4 className="text-4xl font-serif font-bold text-brand-gold mb-2">10+</h4>
-                <p className="text-gray-500 font-medium">Years of Experience</p>
+                <h4 className="text-3xl md:text-4xl font-serif font-bold text-brand-gold mb-1 md:mb-2">10+</h4>
+                <p className="text-sm md:text-base text-gray-500 font-medium">Years of Experience</p>
               </div>
               <div>
-                <h4 className="text-4xl font-serif font-bold text-brand-gold mb-2">50k+</h4>
-                <p className="text-gray-500 font-medium">Happy Travelers</p>
+                <h4 className="text-3xl md:text-4xl font-serif font-bold text-brand-gold mb-1 md:mb-2">50k+</h4>
+                <p className="text-sm md:text-base text-gray-500 font-medium">Happy Travelers</p>
               </div>
             </div>
           </div>
 
           {/* Image Content */}
-          <div className="order-1 lg:order-2 relative">
-            <div className="absolute inset-0 bg-brand-gold rounded-3xl transform translate-x-4 translate-y-4 -z-10"></div>
-            <div className="relative h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
+          <div className="order-1 lg:order-2 relative px-4 sm:px-0">
+            <div className="absolute inset-0 bg-brand-gold rounded-3xl transform translate-x-3 translate-y-3 md:translate-x-4 md:translate-y-4 -z-10"></div>
+            <div className="relative h-[300px] sm:h-[400px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
               <img 
                 src="https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&q=80" 
                 alt="Rameswaram Temple" 

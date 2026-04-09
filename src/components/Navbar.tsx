@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User as UserIcon, LogOut } from 'lucide-react';
+import { Menu, X, User as UserIcon, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar() {
@@ -22,10 +22,10 @@ export default function Navbar() {
   return (
     <nav className="bg-brand-blue text-white sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20">
-          <div className="flex items-center mr-4 lg:mr-8 flex-shrink-0">
+        <div className="flex justify-between h-16 sm:h-20">
+          <div className="flex items-center mr-2 sm:mr-4 lg:mr-8 flex-shrink-0">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="font-serif text-lg md:text-xl lg:text-2xl font-bold text-brand-gold whitespace-nowrap tracking-tight">
+              <span className="font-serif text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-brand-gold whitespace-nowrap tracking-tight truncate max-w-[200px] sm:max-w-none">
                 Thirupathi Balaji Travels
               </span>
             </Link>
@@ -47,9 +47,17 @@ export default function Navbar() {
             
             {user ? (
               <div className="flex items-center space-x-4 ml-2">
-                <span className="text-sm text-gray-300 flex items-center whitespace-nowrap">
+                <Link 
+                  to="/admin/vehicles"
+                  className="text-gray-300 hover:text-brand-gold transition-colors flex items-center text-sm"
+                  title="Admin Panel"
+                >
+                  <Settings className="w-4 h-4 mr-1.5" />
+                  <span className="hidden lg:inline">Admin</span>
+                </Link>
+                <span className="text-sm text-gray-300 flex items-center whitespace-nowrap border-l border-gray-600 pl-4">
                   <UserIcon className="w-4 h-4 mr-2" />
-                  {user.email?.split('@')[0]}
+                  <span className="hidden lg:inline">{user.email?.split('@')[0]}</span>
                 </span>
                 <button
                   onClick={signOut}
@@ -60,12 +68,21 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <Link
-                to="/login"
-                className="bg-brand-gold text-brand-blue px-4 lg:px-6 py-2 rounded-full font-semibold hover:bg-yellow-400 transition-colors whitespace-nowrap text-sm lg:text-base ml-2"
-              >
-                Sign In
-              </Link>
+              <div className="flex items-center space-x-4 ml-2">
+                <Link 
+                  to="/admin/vehicles"
+                  className="text-gray-400 hover:text-brand-gold transition-colors text-xs hidden lg:block"
+                  title="Admin Demo"
+                >
+                  Admin Demo
+                </Link>
+                <Link
+                  to="/login"
+                  className="bg-brand-gold text-brand-blue px-4 lg:px-6 py-2 rounded-full font-semibold hover:bg-yellow-400 transition-colors whitespace-nowrap text-sm lg:text-base"
+                >
+                  Sign In
+                </Link>
+              </div>
             )}
           </div>
 
@@ -73,7 +90,7 @@ export default function Navbar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-300 hover:text-white focus:outline-none"
+              className="text-gray-300 hover:text-white focus:outline-none p-2 -mr-2"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -83,14 +100,14 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-slate-800">
+        <div className="md:hidden bg-slate-800 border-t border-slate-700">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {links.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                className={`block px-3 py-3 rounded-md text-base font-medium ${
                   isActive(link.path)
                     ? 'text-brand-gold bg-slate-700'
                     : 'text-gray-300 hover:text-white hover:bg-slate-700'
@@ -99,19 +116,30 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+            <div className="border-t border-slate-700 my-2 pt-2"></div>
+            <Link
+              to="/admin/vehicles"
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-3 rounded-md text-base font-medium text-blue-400 hover:text-white hover:bg-slate-700 flex items-center"
+            >
+              <Settings className="w-5 h-5 mr-3" />
+              Admin Panel
+            </Link>
             {user ? (
               <button
                 onClick={() => { signOut(); setIsOpen(false); }}
-                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-slate-700"
+                className="w-full text-left px-3 py-3 rounded-md text-base font-medium text-red-400 hover:text-red-300 hover:bg-slate-700 flex items-center"
               >
-                Sign Out
+                <LogOut className="w-5 h-5 mr-3" />
+                Sign Out ({user.email?.split('@')[0]})
               </button>
             ) : (
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-brand-gold hover:text-yellow-400 hover:bg-slate-700"
+                className="block px-3 py-3 rounded-md text-base font-medium text-brand-gold hover:text-yellow-400 hover:bg-slate-700 flex items-center"
               >
+                <UserIcon className="w-5 h-5 mr-3" />
                 Sign In
               </Link>
             )}
